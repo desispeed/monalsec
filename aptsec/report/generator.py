@@ -1,5 +1,9 @@
+import sqlite3
+
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate
+
 from aptsec.models import get_engagement, list_findings, list_targets
 from aptsec.report.template import (
     build_cover, build_executive_summary,
@@ -7,7 +11,7 @@ from aptsec.report.template import (
 )
 
 
-def generate_pdf(conn, engagement_id: int, output_path: str) -> None:
+def generate_pdf(conn: sqlite3.Connection, engagement_id: int, output_path: str) -> None:
     eng = get_engagement(conn, engagement_id)
     if not eng:
         raise ValueError(f"Engagement #{engagement_id} not found.")
@@ -18,10 +22,10 @@ def generate_pdf(conn, engagement_id: int, output_path: str) -> None:
     doc = SimpleDocTemplate(
         output_path,
         pagesize=A4,
-        rightMargin=2.5 * 28.35,
-        leftMargin=2.5 * 28.35,
-        topMargin=2.5 * 28.35,
-        bottomMargin=2.5 * 28.35,
+        rightMargin=2.5 * cm,
+        leftMargin=2.5 * cm,
+        topMargin=2.5 * cm,
+        bottomMargin=2.5 * cm,
     )
 
     story = []

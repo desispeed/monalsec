@@ -1,9 +1,11 @@
+from collections import Counter
+from xml.sax.saxutils import escape
+
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak,
+    Paragraph, Spacer, Table, TableStyle, PageBreak,
 )
 
 SEVERITY_COLORS = {
@@ -32,9 +34,9 @@ def build_cover(eng) -> list:
     elements.append(Spacer(1, 4 * cm))
     elements.append(Paragraph("PENETRATION TEST REPORT", HEADING1))
     elements.append(Spacer(1, 0.5 * cm))
-    elements.append(Paragraph(f"<b>Engagement:</b> {eng['name']}", BODY))
-    elements.append(Paragraph(f"<b>Target:</b> {eng['target']}", BODY))
-    elements.append(Paragraph(f"<b>Tester:</b> {eng['tester']}", BODY))
+    elements.append(Paragraph(f"<b>Engagement:</b> {escape(eng['name'])}", BODY))
+    elements.append(Paragraph(f"<b>Target:</b> {escape(eng['target'])}", BODY))
+    elements.append(Paragraph(f"<b>Tester:</b> {escape(eng['tester'])}", BODY))
     elements.append(Paragraph(f"<b>Date:</b> {eng['created_at'][:10]}", BODY))
     elements.append(Spacer(1, 1 * cm))
     elements.append(Paragraph(
@@ -46,7 +48,6 @@ def build_cover(eng) -> list:
 
 
 def build_executive_summary(findings: list) -> list:
-    from collections import Counter
     elements = [Paragraph("Executive Summary", HEADING1)]
     counts = Counter(f["severity"] for f in findings)
     data = [["Severity", "Count"]] + [
@@ -81,18 +82,18 @@ def build_findings_section(findings: list) -> list:
         hex_color = SEVERITY_HEX.get(f["severity"], "#808080")
         elements.append(Spacer(1, 0.3 * cm))
         elements.append(Paragraph(
-            f'<font color="{hex_color}">[{f["severity"].upper()}]</font> {f["title"]}',
+            f'<font color="{hex_color}">[{f["severity"].upper()}]</font> {escape(f["title"])}',
             HEADING2,
         ))
-        elements.append(Paragraph(f"<b>Category:</b> {f['category']}", BODY))
-        if f["cvss_score"]:
+        elements.append(Paragraph(f"<b>Category:</b> {escape(f['category'])}", BODY))
+        if f["cvss_score"] is not None:
             elements.append(Paragraph(f"<b>CVSS Score:</b> {f['cvss_score']}", BODY))
         elements.append(Paragraph("<b>Description:</b>", BODY))
-        elements.append(Paragraph(f["description"] or "—", BODY))
+        elements.append(Paragraph(escape(f["description"]) or "—", BODY))
         elements.append(Paragraph("<b>Evidence:</b>", BODY))
-        elements.append(Paragraph(f["evidence"] or "—", BODY))
+        elements.append(Paragraph(escape(f["evidence"]) or "—", BODY))
         elements.append(Paragraph("<b>Remediation:</b>", BODY))
-        elements.append(Paragraph(f["remediation"] or "—", BODY))
+        elements.append(Paragraph(escape(f["remediation"]) or "—", BODY))
         elements.append(Spacer(1, 0.3 * cm))
     elements.append(PageBreak())
     return elements
