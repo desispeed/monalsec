@@ -192,3 +192,24 @@ def import_nmap(filepath, eid):
         imported += 1
 
     console.print(f"[green]Imported {imported} open port(s) from {filepath}[/green]")
+
+
+# ── Report commands ───────────────────────────────────────────────────────────
+
+@cli.group()
+def report():
+    """Generate reports."""
+
+
+@report.command("generate")
+@click.option("--engagement", "eid", required=True, type=int)
+@click.option("--output", required=True, type=click.Path())
+def report_generate(eid, output):
+    from aptsec.report.generator import generate_pdf
+    db = get_db()
+    try:
+        generate_pdf(db, engagement_id=eid, output_path=output)
+        console.print(f"[green]Report saved to {output}[/green]")
+    except ValueError as e:
+        console.print(f"[red]{e}[/red]")
+        sys.exit(1)
