@@ -39,5 +39,5 @@ def test_closed_port_excluded():
 
 
 def test_invalid_file_raises():
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         parse_nmap_xml("/nonexistent/file.xml")
