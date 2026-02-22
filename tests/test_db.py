@@ -1,6 +1,3 @@
-import sqlite3
-import tempfile
-import os
 import pytest
 from aptsec.db import get_connection, init_db
 

@@ -45,4 +45,3 @@ def init_db(conn: sqlite3.Connection) -> None:
             state         TEXT    NOT NULL DEFAULT 'open'
         );
     """)
-    conn.commit()
