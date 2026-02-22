@@ -1,4 +1,3 @@
-import tempfile
 import pytest
 from aptsec.db import get_connection, init_db
 from aptsec.models import (
