@@ -1,0 +1,6 @@
+aptsec.db
+*.pyc
+__pycache__/
+dist/
+*.egg-info/
+.venv/
