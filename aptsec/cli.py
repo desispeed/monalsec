@@ -10,6 +10,7 @@ from aptsec.models import (
     create_target, list_targets,
 )
 from aptsec.parsers.nmap import parse_nmap_xml
+from aptsec.report.generator import generate_pdf
 
 console = Console()
 
@@ -205,11 +206,10 @@ def report():
 @click.option("--engagement", "eid", required=True, type=int)
 @click.option("--output", required=True, type=click.Path())
 def report_generate(eid, output):
-    from aptsec.report.generator import generate_pdf
     db = get_db()
     try:
         generate_pdf(db, engagement_id=eid, output_path=output)
         console.print(f"[green]Report saved to {output}[/green]")
-    except ValueError as e:
+    except (ValueError, OSError) as e:
         console.print(f"[red]{e}[/red]")
         sys.exit(1)

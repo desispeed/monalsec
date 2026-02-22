@@ -30,3 +30,15 @@ def test_report_generates_pdf(runner_with_data):
     assert result.exit_code == 0
     assert os.path.exists(output)
     assert "report.pdf" in result.output
+
+
+def test_report_nonexistent_engagement(tmp_path, monkeypatch):
+    db_path = str(tmp_path / "test.db")
+    monkeypatch.setenv("APTSEC_DB", db_path)
+    runner = CliRunner()
+    output = str(tmp_path / "report.pdf")
+    result = runner.invoke(cli, [
+        "report", "generate", "--engagement", "99", "--output", output,
+    ])
+    assert result.exit_code != 0
+    assert not os.path.exists(output)
