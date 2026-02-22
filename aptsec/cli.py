@@ -1,4 +1,5 @@
 import os
+import sys
 import click
 from rich.console import Console
 from rich.table import Table
@@ -12,11 +13,21 @@ from aptsec.parsers.nmap import parse_nmap_xml
 
 console = Console()
 
+SEVERITY_COLORS = {
+    "critical": "red", "high": "orange3",
+    "medium": "yellow", "low": "blue", "info": "dim",
+}
+
+_db_initialized_path: str | None = None
+
 
 def get_db():
+    global _db_initialized_path
     path = os.environ.get("APTSEC_DB", os.path.expanduser("~/aptsec.db"))
     conn = get_connection(path)
-    init_db(conn)
+    if _db_initialized_path != path:
+        init_db(conn)
+        _db_initialized_path = path
     return conn
 
 
@@ -67,7 +78,7 @@ def engagement_show(eid):
     eng = get_engagement(db, eid)
     if not eng:
         console.print(f"[red]Engagement #{eid} not found.[/red]")
-        raise SystemExit(1)
+        sys.exit(1)
     console.print(f"[bold]#{eng['id']} {eng['name']}[/bold]")
     console.print(f"Target:  {eng['target']}")
     console.print(f"Tester:  {eng['tester']}")
@@ -118,10 +129,6 @@ def finding_list(eid):
     table.add_column("Category")
     table.add_column("Title")
     table.add_column("Source")
-    SEVERITY_COLORS = {
-        "critical": "red", "high": "orange3",
-        "medium": "yellow", "low": "blue", "info": "dim",
-    }
     for r in rows:
         color = SEVERITY_COLORS.get(r["severity"], "white")
         table.add_row(
@@ -139,7 +146,7 @@ def finding_delete(fid):
     f = get_finding(db, fid)
     if not f:
         console.print(f"[red]Finding #{fid} not found.[/red]")
-        raise SystemExit(1)
+        sys.exit(1)
     delete_finding(db, fid)
     console.print(f"[green]Deleted finding #{fid}.[/green]")
 
@@ -159,12 +166,12 @@ def import_nmap(filepath, eid):
     eng = get_engagement(db, eid)
     if not eng:
         console.print(f"[red]Engagement #{eid} not found.[/red]")
-        raise SystemExit(1)
+        sys.exit(1)
     try:
         entries = parse_nmap_xml(filepath)
     except ValueError as e:
         console.print(f"[red]{e}[/red]")
-        raise SystemExit(1)
+        sys.exit(1)
 
     imported = 0
     for entry in entries:
