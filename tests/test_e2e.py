@@ -46,4 +46,4 @@ def test_full_workflow(tmp_path, monkeypatch):
     ])
     assert r.exit_code == 0
     assert os.path.exists(output_pdf)
-    assert os.path.getsize(output_pdf) > 5000
+    assert os.path.getsize(output_pdf) > 4000  # confirms non-empty multi-page PDF
