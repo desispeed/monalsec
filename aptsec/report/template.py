@@ -72,6 +72,14 @@ def build_executive_summary(findings: list) -> list:
         f"{critical} critical and {high} high severity issue(s) requiring immediate attention.",
         BODY,
     ))
+    elements.append(Spacer(1, 0.3 * cm))
+    elements.append(Paragraph(
+        "Findings are rated using industry-standard severity classifications. Critical and High "
+        "severity findings should be remediated immediately. Medium severity findings should be "
+        "addressed within 30 days. Low and Informational findings should be reviewed and "
+        "remediated as resources allow. All findings include remediation guidance.",
+        BODY,
+    ))
     elements.append(PageBreak())
     return elements
 
