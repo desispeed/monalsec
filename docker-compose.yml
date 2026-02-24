@@ -1,0 +1,11 @@
+services:
+  aptsec:
+    build: .
+    image: aptsec:latest
+    volumes:
+      - aptsec-data:/data
+      - ./scans:/scans   # mount a local folder for nmap XML files
+    network_mode: host   # allows nmap to reach targets directly
+
+volumes:
+  aptsec-data:
